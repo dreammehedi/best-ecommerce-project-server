@@ -71,4 +71,5 @@ const loginUser = async (req, res, next) => {
     next(error);
   }
 };
+
 module.exports = { getUsers, regiserUser, loginUser };

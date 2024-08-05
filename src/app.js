@@ -6,6 +6,7 @@ const xssClean = require("xss-clean");
 const apiLimit = require("express-rate-limit");
 const createError = require("http-errors");
 const userRouter = require("./routers/usersRouter");
+const productsRouter = require("./routers/productsRouter");
 const app = express();
 
 const apiCallLimit = apiLimit({
@@ -24,6 +25,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // my custom routers
 app.use("/api", userRouter);
+app.use("/api", productsRouter);
 
 // home route
 app.get("/", (req, res) => {
