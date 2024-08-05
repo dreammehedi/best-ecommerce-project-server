@@ -1,4 +1,6 @@
+const bcrypt = require("bcrypt");
 const User = require("../models/userModels");
+const jwtToken = require("../helper/jwtToken.js");
 
 // get all users
 const getUsers = async (req, res, next) => {
@@ -28,7 +30,9 @@ const regiserUser = async (req, res, next) => {
     // Create new user
     const newUser = await User.create(userNewData);
     if (newUser?._id) {
-      res.status(201).send({ success: true, message: "New user created." });
+      res
+        .status(201)
+        .send({ success: true, message: "You have successfully registered." });
     } else {
       res.status(404).send({ success: false, message: "Server Error!" });
     }
@@ -36,4 +40,35 @@ const regiserUser = async (req, res, next) => {
     next(error);
   }
 };
-module.exports = { getUsers, regiserUser };
+
+// login user
+const loginUser = async (req, res, next) => {
+  try {
+    const userData = req.body;
+
+    // const options = { password: 0 };
+    const findUser = await User.findOne({ email: userData.email });
+
+    // find database user
+    if (!findUser) {
+      return res.status(404).send({ message: "User not found!" });
+    }
+
+    // check user password is correct
+    const isMatch = await bcrypt.compare(userData.password, findUser.password);
+
+    if (!isMatch) {
+      return res.status(404).send({ message: "Credentials are not match!" });
+    }
+
+    // generate user token
+    const token = jwtToken(findUser);
+
+    res
+      .status(200)
+      .send({ success: true, message: "Login Successfully.", token: token });
+  } catch (error) {
+    next(error);
+  }
+};
+module.exports = { getUsers, regiserUser, loginUser };
