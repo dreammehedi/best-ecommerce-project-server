@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const xssClean = require("xss-clean");
 const apiLimit = require("express-rate-limit");
 const createError = require("http-errors");
+const userRouter = require("./routers/usersRouter");
 const app = express();
 
 const apiCallLimit = apiLimit({
@@ -20,6 +21,9 @@ app.use(xssClean());
 app.use(apiCallLimit);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// my custom routers
+app.use("/api", userRouter);
 
 // home route
 app.get("/", (req, res) => {
